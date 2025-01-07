@@ -12,7 +12,7 @@ func Take(targetURL string) ([]byte, error) {
 	defer cancel()
 
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.WindowSize(1200, 630),
+		chromedp.WindowSize(1200, 739),
 		chromedp.DisableGPU,
 		chromedp.NoSandbox,
 		chromedp.Headless,
