@@ -3,8 +3,10 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"fmt"
 	"io"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -26,6 +28,14 @@ type S3 struct {
 }
 
 func NewS3(cfg S3Config) (*S3, error) {
+	customHTTPClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
 	awsCfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithRegion(cfg.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
@@ -33,6 +43,7 @@ func NewS3(cfg S3Config) (*S3, error) {
 			cfg.SecretAccessKey,
 			"",
 		)),
+		config.WithHTTPClient(customHTTPClient),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("loading AWS config: %w", err)
